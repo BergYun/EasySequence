@@ -44,7 +44,7 @@
     return [[EZSEnumerator alloc] initWithFastEnumerator:self.originSequence];
 }
 
-- (void)forEachWithIndexAndStop:(void (^)(id _Nonnull, NSUInteger, BOOL * _Nonnull))eachBlock {
+- (void)forEachWithIndexAndStop:(void (^NS_NOESCAPE)(id _Nonnull, NSUInteger, BOOL * _Nonnull))eachBlock {
     NSParameterAssert(eachBlock);
     if (!eachBlock) { return; }
     NSUInteger index = 0;

@@ -21,7 +21,7 @@ NSString * const EZSequenceExceptionReason_ZipMethodMustUseOnNSFastEnumerationOf
 
 @implementation EZSequence (Operations)
 
-- (void)forEachWithIndex:(void (^)(id _Nonnull, NSUInteger))eachBlock {
+- (void)forEachWithIndex:(EZSForEachWithIndexBlock NS_NOESCAPE)eachBlock {
     NSParameterAssert(eachBlock);
     if (!eachBlock) { return; }
     void (^block)(id _Nonnull, NSUInteger, BOOL * _Nonnull) = ^(id item, NSUInteger index, BOOL * _) {
@@ -30,7 +30,7 @@ NSString * const EZSequenceExceptionReason_ZipMethodMustUseOnNSFastEnumerationOf
     [self forEachWithIndexAndStop:block];
 }
 
-- (void)forEach:(void (^)(id _Nonnull))eachBlock {
+- (void)forEach:(EZSForEachBlock NS_NOESCAPE)eachBlock {
     NSParameterAssert(eachBlock);
     if (!eachBlock) { return; }
     void (^block)(id _Nonnull, NSUInteger, BOOL * _Nonnull) = ^(id item, NSUInteger index, BOOL * _) {
@@ -39,7 +39,7 @@ NSString * const EZSequenceExceptionReason_ZipMethodMustUseOnNSFastEnumerationOf
     [self forEachWithIndexAndStop:block];
 }
 
-- (EZSequence *)flattenMap:(EZSFlattenMapBlock)flattenBlock {
+- (EZSequence *)flattenMap:(EZSFlattenMapBlock NS_NOESCAPE)flattenBlock {
     NSParameterAssert(flattenBlock);
     NSMutableArray *array = [NSMutableArray new];
     for (id item in self) {
@@ -82,7 +82,7 @@ NSString * const EZSequenceExceptionReason_ZipMethodMustUseOnNSFastEnumerationOf
     return [EZS_Sequence(sequences) flatten];
 }
 
-- (EZSequence *)filter:(EZSFliterBlock)filterBlock {
+- (EZSequence *)filter:(EZSFliterBlock NS_NOESCAPE)filterBlock {
     NSParameterAssert(filterBlock);
     NSMutableArray *array = [NSMutableArray new];
     if (filterBlock) {
@@ -95,7 +95,7 @@ NSString * const EZSequenceExceptionReason_ZipMethodMustUseOnNSFastEnumerationOf
     return EZS_Sequence(array);
 }
 
-- (EZSequence *)filterWithIndex:(EZSFilterWithIndexBlock)filterBlock {
+- (EZSequence *)filterWithIndex:(EZSFilterWithIndexBlock NS_NOESCAPE)filterBlock {
     NSParameterAssert(filterBlock);
     NSMutableArray *array = [NSMutableArray new];
     NSUInteger index = 0;
@@ -109,7 +109,7 @@ NSString * const EZSequenceExceptionReason_ZipMethodMustUseOnNSFastEnumerationOf
     return EZS_Sequence(array);
 }
 
-- (EZSequence *)map:(EZSMapBlock)mapBlock {
+- (EZSequence *)map:(EZSMapBlock NS_NOESCAPE)mapBlock {
     NSParameterAssert(mapBlock);
     if (!mapBlock) { return nil; }
     id (^block)(id, NSUInteger) = ^(id item, NSUInteger _) {
@@ -118,7 +118,7 @@ NSString * const EZSequenceExceptionReason_ZipMethodMustUseOnNSFastEnumerationOf
     return [self mapWithIndex:block];
 }
 
-- (EZSequence *)mapWithIndex:(id  _Nonnull (^)(id _Nonnull, NSUInteger))mapBlock {
+- (EZSequence *)mapWithIndex:(EZSMapWithIndexBlock NS_NOESCAPE)mapBlock {
     NSParameterAssert(mapBlock);
     if (!mapBlock) { return nil;}
     NSMutableArray *array = [NSMutableArray new];
@@ -162,7 +162,7 @@ NSString * const EZSequenceExceptionReason_ZipMethodMustUseOnNSFastEnumerationOf
     return nil;
 }
 
-- (id)firstObjectWhere:(EZSFliterBlock)checkBlock {
+- (id)firstObjectWhere:(EZSFliterBlock NS_NOESCAPE)checkBlock {
     NSParameterAssert(checkBlock);
     if (!checkBlock) { return nil; }
     for (id item in self) {
@@ -173,7 +173,7 @@ NSString * const EZSequenceExceptionReason_ZipMethodMustUseOnNSFastEnumerationOf
     return nil;
 }
 
-- (NSUInteger)firstIndexWhere:(EZSFliterBlock)checkBlock {
+- (NSUInteger)firstIndexWhere:(EZSFliterBlock NS_NOESCAPE)checkBlock {
     NSParameterAssert(checkBlock);
     if (!checkBlock) { return NSNotFound; }
     NSUInteger index = 0;
@@ -186,7 +186,7 @@ NSString * const EZSequenceExceptionReason_ZipMethodMustUseOnNSFastEnumerationOf
     return NSNotFound;
 }
 
-- (BOOL)any:(BOOL (^)(id _Nonnull))checkBlock {
+- (BOOL)any:(EZSFliterBlock NS_NOESCAPE)checkBlock {
     NSParameterAssert(checkBlock);
     if (!checkBlock) { return NO; }
     BOOL result = NO;
@@ -199,23 +199,23 @@ NSString * const EZSequenceExceptionReason_ZipMethodMustUseOnNSFastEnumerationOf
     return result;
 }
 
-- (EZSequence *)select:(BOOL (^)(id _Nonnull))selectBlock {
+- (EZSequence *)select:(EZSFliterBlock NS_NOESCAPE)selectBlock {
     NSParameterAssert(selectBlock);
     return [self filter:selectBlock];
 }
 
-- (EZSequence *)selectWithIndex:(BOOL (^)(id _Nonnull, NSUInteger index))selectBlock {
+- (EZSequence *)selectWithIndex:(EZSFilterWithIndexBlock NS_NOESCAPE)selectBlock {
     NSParameterAssert(selectBlock);
     return [self filterWithIndex:selectBlock];
 }
 
-- (EZSequence *)reject:(BOOL (^)(id _Nonnull))rejectBlock {
+- (EZSequence *)reject:(EZSFliterBlock NS_NOESCAPE)rejectBlock {
     NSParameterAssert(rejectBlock);
     if (!rejectBlock) { return nil;}
     return [self select:EZS_not(rejectBlock)];
 }
 
-- (EZSequence *)rejectWithIndex:(BOOL (^)(id _Nonnull, NSUInteger index))rejectBlock {
+- (EZSequence *)rejectWithIndex:(EZSFilterWithIndexBlock NS_NOESCAPE)rejectBlock {
     NSParameterAssert(rejectBlock);
     if (!rejectBlock) { return nil;}
     return [self filterWithIndex:^BOOL(id instance, NSUInteger index) {
@@ -223,7 +223,7 @@ NSString * const EZSequenceExceptionReason_ZipMethodMustUseOnNSFastEnumerationOf
     }];
 }
 
-- (id)reduceStart:(id)startValue withBlock:(id  _Nullable (^)(id _Nullable, id _Nullable))reduceBlock {
+- (id)reduceStart:(id)startValue withBlock:(id  _Nullable (^NS_NOESCAPE)(id _Nullable, id _Nullable))reduceBlock {
     NSParameterAssert(reduceBlock);
     if (!reduceBlock) { return nil; }
     id result = startValue;
@@ -233,13 +233,13 @@ NSString * const EZSequenceExceptionReason_ZipMethodMustUseOnNSFastEnumerationOf
     return result;
 }
 
-- (id)reduce:(id  _Nonnull (^)(id _Nonnull, id _Nonnull))reduceBlock {
+- (id)reduce:(id  _Nonnull (^NS_NOESCAPE)(id _Nonnull, id _Nonnull))reduceBlock {
     NSParameterAssert(reduceBlock);
     if (!reduceBlock) { return nil; }
     return [[self skip:1] reduceStart:self.firstObject withBlock:reduceBlock];
 }
 
-- (NSDictionary<id<NSCopying>, id> *)groupBy:(id<NSCopying>  _Nonnull (^)(id _Nonnull))groupBlock {
+- (NSDictionary<id<NSCopying>, id> *)groupBy:(id<NSCopying>  _Nonnull (^NS_NOESCAPE)(id _Nonnull))groupBlock {
     NSParameterAssert(groupBlock);
     if (!groupBlock) { return nil; }
     NSMutableDictionary *mutableDic = [NSMutableDictionary dictionary];
