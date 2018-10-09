@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [1.3.1] - 2018-10-09
+
+### Fixed
+
+- Xcode 10 warning.
+
 ## [1.3.0] - 2018-07-05
 
 ### Added
