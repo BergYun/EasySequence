@@ -82,14 +82,16 @@
 #pragma mark - remove methods
 
 - (void)removeLastObject {
-    if (self.count >= 1) {
-        [self removeObjectAtIndex:(self.count - 1)];
+    EZS_SCOPELOCK(_arrayLock);
+    if (_array.count > 0) {
+        [_array removeLastObject];
     }
 }
 
 - (void)removeFirstObject {
-    if (self.count > 0){
-        [self removeObjectAtIndex:0];
+    EZS_SCOPELOCK(_arrayLock);
+    if (_array.count > 0) {
+        [_array removeObjectAtIndex:0];
     }
 }
 
