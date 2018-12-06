@@ -57,6 +57,11 @@
 
 #pragma mark - add methods
 
+- (void)addObject:(id)anObject {
+    EZSWeakReference *obj = [self weakReference:anObject];
+    [super addObject:obj];
+}
+
 - (void)insertObject:(id)anObject atIndex:(NSUInteger)index {
     EZSWeakReference *obj = [self weakReference:anObject];
     [super insertObject:obj atIndex:index];

@@ -69,7 +69,8 @@
 #pragma mark - add methods
 
 - (void)addObject:(id)anObject {
-    [self insertObject:anObject atIndex:self.count];
+    EZS_SCOPELOCK(_orderedSetLock);
+    [_orderedSet addObject:anObject];
 }
 
 - (void)insertObject:(id)anObject atIndex:(NSUInteger)index {
@@ -81,14 +82,16 @@
 #pragma mark - remove methods
 
 - (void)removeLastObject {
-    if (self.count >= 1) {
-        [self removeObjectAtIndex:(_orderedSet.count - 1)];
+    EZS_SCOPELOCK(_orderedSetLock);
+    if (_orderedSet.count > 0) {
+        [_orderedSet removeObjectAtIndex:_orderedSet.count - 1];
     }
 }
 
 - (void)removeFirstObject {
-    if (self.count > 0){
-        [self removeObjectAtIndex:0];
+    EZS_SCOPELOCK(_orderedSetLock);
+    if (_orderedSet.count > 0) {
+        [_orderedSet removeObjectAtIndex:0];
     }
 }
 
